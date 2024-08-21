@@ -1,36 +1,56 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import { Button } from 'react-bootstrap'
+import { useEffect, useState } from "react";
+import app from "./config/firebaseConfig";
+import { getDatabase, onValue, ref } from "firebase/database";
+import ProductEditorModal from "./components/ProductEditorModal";
+import ProductCard from "./components/ProductCard";
 
 function App() {
-  const [count, setCount] = useState(0)
+  const [products, setProducts] = useState([]);
+  const [indexOfEditProduct, setIndexOfEditProduct] = useState(-1);
+  const [editorOpen, setEditorOpen] = useState(false);
+
+  useEffect(() => {
+    const database = getDatabase(app);
+    const collectionRef = ref(database, "products");
+
+    // Function to fetch data from the database
+    const fetchData = () => {
+      // Listen for changes in the collection
+      onValue(collectionRef, (snapshot) => {
+        const products = snapshot.val();
+        setProducts(products);
+      });
+    };
+
+    // Fetch data when the component mounts
+    fetchData();
+  }, []);
+
+  const handleEditProduct = (index) => {
+    setIndexOfEditProduct(index);
+    setEditorOpen(true);
+  }
+
+  const handleCloseModal = () => {
+    setIndexOfEditProduct(-1);
+    setEditorOpen(false);
+  }
 
   return (
     <>
+      {console.log(products)}
+
+      <button onClick={() => handleEditProduct(-1)} >Create</button>
+
       <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        {products.map((product, index) => {
+          return (
+            <ProductCard key={index} product={product} handleEditProduct={() => handleEditProduct(index)} />
+          );
+        })}
       </div>
-      <h1>Vite + React</h1>
-      <h3>Test Change</h3>
-      <div className="card">
-        <Button variant="primary"
-          onClick={() => setCount((count) => count + 1)}
-        >
-          count is {count}
-        </Button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
+
+      <ProductEditorModal editorOpen={editorOpen} product={products[indexOfEditProduct]} handleCloseModal={handleCloseModal} />
     </>
   )
 }
