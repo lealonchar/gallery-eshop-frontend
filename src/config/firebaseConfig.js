@@ -1,6 +1,6 @@
 import { initializeApp } from "firebase/app";
+import { getDatabase } from "firebase/database";
 
-// Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: import.meta.env.VITE_apiKey,
   authDomain: import.meta.env.VITE_authDomain,
@@ -11,7 +11,7 @@ const firebaseConfig = {
   databaseURL: import.meta.env.VITE_databaseUrl
 };
 
-// Initialize Firebase
 const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
 
-export default app;
+export { app, database };

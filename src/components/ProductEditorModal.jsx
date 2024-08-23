@@ -1,25 +1,53 @@
 import { useEffect, useState } from 'react'
 import { Button, Form, Modal } from 'react-bootstrap';
+import { database } from '../config/firebaseConfig';
+import { ref, push, update } from 'firebase/database';
 
-const ProductEditorModal = ({ editorOpen, product, handleCloseModal }) => {
+const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [artist, setArtist] = useState("");
     const [price, setPrice] = useState("");
 
     useEffect(() => {
-        setTitle(product?.title || "");
-        setDescription(product?.description || "");
-        setArtist(product?.artist || "");
-        setPrice(product?.price || 0);
+        const resetData = () => {
+            setTitle(product?.title || "");
+            setDescription(product?.description || "");
+            setArtist(product?.artist || "");
+            setPrice(product?.price || 0);
+        }
+
+        resetData();
     }, [product]);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
 
-        // TODO: implement firebase saving
-
-        handleCloseModal();
+        const product = {
+            title: title,
+            description: description,
+            artist: artist,
+            price: price
+        };
+        // TODO: Dodadi validacija polinjata da ne se prazen string, cenata da e pogolema od 0
+        // ako nesto e e validno ne mu davaj da zacuva i prikazi mu error message
+        let productRef;
+        if (productKey) {
+            productRef = ref(database, `products/${productKey}`);
+        } else {
+            productRef = ref(database, 'products');
+        }
+        try {
+            if (productKey) {
+                await update(productRef, product);
+            } else {
+                await push(productRef, product);
+            }
+            handleCloseModal();
+        } catch (error) {
+            console.log(error)
+            alert('Error saving product:', error);
+        }
     }
 
     return (
