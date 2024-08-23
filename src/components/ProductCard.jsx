@@ -1,6 +1,6 @@
 import { Button, Card } from 'react-bootstrap'
 
-const ProductCard = ({ product, handleEditProduct, handleRemoveProduct }) => {
+const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProduct }) => {
   return (
     <Card>
       <p>{product.title}</p>

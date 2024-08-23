@@ -45,12 +45,13 @@ function App() {
   return (
     <>
 
-      <button onClick={() => handleEditProduct(-1)} >Create</button>
+      <button onClick={() => handleEditProduct(null)} >Create</button>
 
       <div>
         {Object.keys(products).map((key) => {
           return (
             <ProductCard key={key}
+              productKey={key}
               product={products[key]}
               handleEditProduct={() => handleEditProduct(key)}
               handleRemoveProduct={() => handleRemoveProduct(key)}
