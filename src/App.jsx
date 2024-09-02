@@ -3,12 +3,18 @@ import { app } from "./config/firebaseConfig";
 import { getDatabase, onValue, ref, remove } from "firebase/database";
 import ProductEditorModal from "./components/ProductEditorModal";
 import ProductCard from "./components/ProductCard";
-import { Button, Navbar, Nav, Form, FormControl,Container, Row, Col } from "react-bootstrap";
+import AuthModal from "./components/AuthModal";
+import ConfirmDeleteModal from "./components/ConfirmDeleteModal";
+import { Button, Navbar, Nav, Form, FormControl, Container, Row, Col } from "react-bootstrap";
 
 function App() {
   const [products, setProducts] = useState([]);
   const [indexOfEditProduct, setIndexOfEditProduct] = useState(null);
   const [editorOpen, setEditorOpen] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
+  const [showAuthModal, setShowAuthModal] = useState(false);
+  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [productToDelete, setProductToDelete] = useState(null);
 
   useEffect(() => {
     const database = getDatabase(app);
@@ -16,7 +22,9 @@ function App() {
     const fetchData = () => {
       onValue(productsRef, (snapshot) => {
         const products = snapshot.val();
-        setProducts(products);
+        if (products) {
+          setProducts(products);
+        }
       });
     };
 
@@ -26,22 +34,35 @@ function App() {
   const handleEditProduct = (key) => {
     setIndexOfEditProduct(key);
     setEditorOpen(true);
-  }
+  };
 
   const handleCloseModal = () => {
     setIndexOfEditProduct(null);
     setEditorOpen(false);
-  }
+  };
 
-  const handleRemoveProduct = async (key) => {
-    const database = getDatabase(app);
-    const productsRef = ref(database, `products/${key}`);
-    try {
-      await remove(productsRef);
-    } catch (error) {
-      alert('Error removing product:', error);
+  const handleRemoveProduct = (key, productName) => {
+    setProductToDelete({ key, productName });
+    setShowConfirmDelete(true);
+  };
+
+  const confirmDeleteProduct = async () => {
+    if (productToDelete) {
+      const { key } = productToDelete;
+      const database = getDatabase(app);
+      const productsRef = ref(database, `products/${key}`);
+      try {
+        await remove(productsRef);
+        setProductToDelete(null);
+        setShowConfirmDelete(false);
+      } catch (error) {
+        alert('Error removing product:', error);
+      }
     }
-  }
+  };
+
+  const handleShowAuthModal = () => setShowAuthModal(true);
+  const handleCloseAuthModal = () => setShowAuthModal(false);
 
   return (
     <>
@@ -65,50 +86,70 @@ function App() {
           </Form>
         </Navbar.Collapse>
       </Navbar>
-      <div>
 
-      </div>
+      {!authenticated && (
+        <Button variant="primary" className="m-3" onClick={handleShowAuthModal}>
+          Admin Login
+        </Button>
+      )}
 
+      {authenticated && (
+        <Button variant="success" className="m-3" onClick={() => handleEditProduct(null)}>
+          Add new item
+        </Button>
+      )}
 
-      <Button variant="success"  className="m-3" onClick={() => handleEditProduct(null)} >Add new item</Button>
-
-
-      <div className="main">
-        {/* Your main content goes here */}
-      </div>
-      <div className="bottom-banner position-fixed bottom-0 start-0 end-0 bg-success text-light text-center py-3">
-      <Container>
-        <Row className="justify-content-center">
-          <Col>
-            <h3>Gallery e-shop</h3>
-            <p>For additional information send us an email</p>
-            <a href="mailto:lea.lonchar@gmail.com?subject=Question&body=Hello, I would like some additional information." className="btn btn-light">
-              Email
-            </a>
-          </Col>
+      <Container className="my-4">
+        <Row>
+          {Object.keys(products).map((key) => (
+            <Col key={key} xs={12} sm={6} md={4} lg={3} className="mb-4">
+              <ProductCard
+                productKey={key}
+                product={products[key]}
+                handleEditProduct={() => handleEditProduct(key)}
+                handleRemoveProduct={() => handleRemoveProduct(key, products[key].name)}
+                authenticated={authenticated} // Pass authenticated state
+              />
+            </Col>
+          ))}
         </Row>
       </Container>
-    </div>
-      <div>
-        {Object.keys(products).map((key) => {
-          return (
-            <ProductCard key={key}
-              productKey={key}
-              product={products[key]}
-              handleEditProduct={() => handleEditProduct(key)}
-              handleRemoveProduct={() => handleRemoveProduct(key)}
-            />
-          );
-        })}
-      </div>
 
-      <ProductEditorModal editorOpen={editorOpen}
+      <ProductEditorModal
+        editorOpen={editorOpen}
         product={products[indexOfEditProduct]}
         productKey={indexOfEditProduct}
         handleCloseModal={handleCloseModal}
       />
+
+      <AuthModal
+        show={showAuthModal}
+        handleClose={handleCloseAuthModal}
+        setAuthenticated={setAuthenticated}
+      />
+
+      <ConfirmDeleteModal
+        show={showConfirmDelete}
+        handleClose={() => setShowConfirmDelete(false)}
+        handleConfirm={confirmDeleteProduct}
+        itemName={productToDelete ? productToDelete.productName : ''}
+      />
+
+      <div className="bottom-banner position-fixed bottom-0 start-0 end-0 bg-success text-light text-center py-3">
+        <Container className="my-4">
+          <Row className="justify-content-center">
+            <Col>
+              <h3>Gallery e-shop</h3>
+              <p>For additional information send us an email</p>
+              <a href="mailto:lea.lonchar@gmail.com?subject=Question&body=Hello, I would like some additional information." className="btn btn-light">
+                Email
+              </a>
+            </Col>
+          </Row>
+        </Container>
+      </div>
     </>
-  )
+  );
 }
 
-export default App
+export default App;

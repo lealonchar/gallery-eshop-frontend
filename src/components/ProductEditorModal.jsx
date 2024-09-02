@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 import { database } from '../config/firebaseConfig';
 import { ref, push, update } from 'firebase/database';
+
 
 const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal }) => {
     const [title, setTitle] = useState("");
@@ -23,32 +24,45 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const product = {
-            title: title,
-            description: description,
-            artist: artist,
-            price: price
+        // Validate inputs
+        if (!title.trim() || !artist.trim() || !description.trim()) {
+            alert('Please fill in all required fields.');
+            return;
+        }
+
+        if (price <= 0) {
+            alert('Price must be greater than 0.');
+            return;
+        }
+
+        const productData = {
+            title,
+            description,
+            artist,
+            price: parseFloat(price) // Ensure price is a number
         };
-        // TODO: Dodadi validacija polinjata da ne se prazen string, cenata da e pogolema od 0
-        // ako nesto e e validno ne mu davaj da zacuva i prikazi mu error message
+
         let productRef;
         if (productKey) {
             productRef = ref(database, `products/${productKey}`);
         } else {
             productRef = ref(database, 'products');
         }
+
         try {
             if (productKey) {
-                await update(productRef, product);
+                await update(productRef, productData);
             } else {
-                await push(productRef, product);
+                await push(productRef, productData);
             }
             handleCloseModal();
         } catch (error) {
-            console.log(error)
-            alert('Error saving product:', error);
+            console.error('Error saving product:', error);
+            alert('Error saving product: ' + error.message);
         }
     }
+
+    const isFormValid = title.trim() && artist.trim() && description.trim() && price > 0;
 
     return (
         <Modal
@@ -63,27 +77,37 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             </Modal.Header>
             <Modal.Body>
                 <Form>
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Group className="mb-3" controlId="formBasicTitle">
                         <Form.Label>Title</Form.Label>
                         <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Group className="mb-3" controlId="formBasicArtist">
                         <Form.Label>Artist</Form.Label>
                         <Form.Control type="text" value={artist} onChange={(e) => setArtist(e.target.value)} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Group className="mb-3" controlId="formBasicDescription">
                         <Form.Label>Description</Form.Label>
                         <Form.Control as="textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicEmail">
+                    <Form.Group className="mb-3" controlId="formBasicPrice">
                         <Form.Label>Price</Form.Label>
-                        <Form.Control type="number" value={price} onChange={(e) => setPrice(e.target.value)} />
+                        <Form.Control 
+                            type="number" 
+                            value={price} 
+                            onChange={(e) => setPrice(e.target.value)} 
+                            min="0" 
+                        />
                     </Form.Group>
 
-                    <Button variant="primary" type="submit" onClick={handleSubmit}>
+                    <Button 
+                        variant="primary" 
+                        type="submit" 
+                        onClick={handleSubmit}
+                        disabled={!isFormValid} // Disable if form is invalid
+                    >
                         Submit
                     </Button>
                 </Form>
@@ -92,4 +116,4 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
     )
 }
 
-export default ProductEditorModal
+export default ProductEditorModal;
