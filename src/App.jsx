@@ -5,7 +5,7 @@ import ProductEditorModal from "./components/ProductEditorModal";
 import ProductCard from "./components/ProductCard";
 import AuthModal from "./components/AuthModal";
 import ConfirmDeleteModal from "./components/ConfirmDeleteModal";
-import { Button, Navbar, Nav, Form, FormControl, Container, Row, Col } from "react-bootstrap";
+import { Button, Navbar, Form, FormControl, Container, Row, Col } from "react-bootstrap";
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -16,6 +16,7 @@ function App() {
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
   const [sortOption, setSortOption] = useState('price-asc');
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     const database = getDatabase(app);
@@ -37,17 +38,14 @@ function App() {
     console.log('Sorting option:', option);
     console.log('Products before sorting:', products);
 
-    // Check if products are an array and sort accordingly
     const productKeys = Object.keys(products);
     if (option === 'default') {
-      // Return products in the original order
       return productKeys.reduce((sorted, key) => {
         sorted[key] = products[key];
         return sorted;
       }, {});
     }
 
-    // Sort products based on the selected option
     return productKeys.sort((a, b) => {
       const productA = products[a];
       const productB = products[b];
@@ -57,6 +55,10 @@ function App() {
           return (productA.price || 0) - (productB.price || 0);
         case 'price-desc':
           return (productB.price || 0) - (productA.price || 0);
+        case 'title-asc':
+          return (productA.title || '').localeCompare(productB.title || '');
+        case 'title-desc':
+          return (productB.title || '').localeCompare(productA.title || '');
         default:
           return 0;
       }
@@ -66,7 +68,21 @@ function App() {
     }, {});
   };
 
+  const filterProducts = (products, query) => {
+    if (!query) return products;
+
+    const lowercasedQuery = query.toLowerCase();
+    return Object.keys(products).reduce((filtered, key) => {
+      const product = products[key];
+      if ((product.title || '').toLowerCase().includes(lowercasedQuery)) {
+        filtered[key] = product;
+      }
+      return filtered;
+    }, {});
+  };
+
   const sortedProducts = sortProducts(products, sortOption);
+  const filteredProducts = filterProducts(sortedProducts, searchQuery);
 
   const handleEditProduct = (key) => {
     setIndexOfEditProduct(key);
@@ -107,17 +123,14 @@ function App() {
         <Navbar.Brand href="#home">Gallery e-shop</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
-          <Nav className="mr-auto">
-            <Nav.Link href="#home">Home</Nav.Link>
-            <Nav.Link href="#features">Items</Nav.Link>
-            <Nav.Link href="#pricing">Contact</Nav.Link>
-          </Nav>
-          <Form className="d-flex ms-auto">
+          <Form className="d-flex ms-auto me-4">
             <FormControl
               type="search"
               placeholder="Search item"
               className="me-2"
               aria-label="Search"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
             />
             <Button variant="outline-success">Search</Button>
           </Form>
@@ -125,7 +138,6 @@ function App() {
       </Navbar>
 
       <div className="flex-grow-1 position-relative">
-        {/* Conditional rendering of buttons */}
         {!authenticated && (
           <Button
             variant="secondary"
@@ -155,26 +167,28 @@ function App() {
                 <span className="me-2">Sort:</span>
                 <Form.Select
                   aria-label="Sort items"
-                  className="form-select-sm"  // Bootstrap class for smaller dropdown
-                  style={{ width: '150px' }}  // Inline style to set width
+                  className="form-select-sm"
+                  style={{ width: '150px' }}
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
                 >
                   <option value="default">Default</option>
                   <option value="price-asc">Price: Low to High</option>
                   <option value="price-desc">Price: High to Low</option>
+                  <option value="title-asc">Title: A to Z</option>
+                  <option value="title-desc">Title: Z to A</option>
                 </Form.Select>
               </div>
             </Col>
           </Row>
           <Row>
-            {Object.keys(sortedProducts).map((key) => (
+            {Object.keys(filteredProducts).map((key) => (
               <Col key={key} xs={12} sm={6} md={4} lg={3} className="mb-4">
                 <ProductCard
                   productKey={key}
-                  product={sortedProducts[key]}
+                  product={filteredProducts[key]}
                   handleEditProduct={() => handleEditProduct(key)}
-                  handleRemoveProduct={() => handleRemoveProduct(key, sortedProducts[key].name)}
+                  handleRemoveProduct={() => handleRemoveProduct(key, filteredProducts[key].title)}
                   authenticated={authenticated}
                 />
               </Col>
