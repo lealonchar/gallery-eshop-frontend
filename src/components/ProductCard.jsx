@@ -3,6 +3,9 @@ import { Button, Card } from 'react-bootstrap';
 const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProduct, authenticated }) => {
   return (
     <Card className="mb-3" style={{ width: '18rem' }}>
+      {product.imageURL && (
+        <Card.Img variant="top" src={product.imageURL} alt={product.title} />
+      )}
       <Card.Body>
         <Card.Title>{product.title}</Card.Title>
         <Card.Subtitle className="mb-2 text-muted">{product.artist}</Card.Subtitle>

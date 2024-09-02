@@ -3,12 +3,12 @@ import { Button, Form, Modal } from 'react-bootstrap';
 import { database } from '../config/firebaseConfig';
 import { ref, push, update } from 'firebase/database';
 
-
 const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [artist, setArtist] = useState("");
     const [price, setPrice] = useState("");
+    const [imageURL, setImageURL] = useState(""); // New state for image URL
 
     useEffect(() => {
         const resetData = () => {
@@ -16,6 +16,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             setDescription(product?.description || "");
             setArtist(product?.artist || "");
             setPrice(product?.price || 0);
+            setImageURL(product?.imageURL || ""); // Reset image URL
         }
 
         resetData();
@@ -39,7 +40,8 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             title,
             description,
             artist,
-            price: parseFloat(price) // Ensure price is a number
+            price: parseFloat(price), // Ensure price is a number
+            imageURL: imageURL.trim() // Include image URL
         };
 
         let productRef;
@@ -102,6 +104,16 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                         />
                     </Form.Group>
 
+                    <Form.Group className="mb-3" controlId="formBasicImageURL">
+                        <Form.Label>Image URL</Form.Label>
+                        <Form.Control 
+                            type="url" 
+                            value={imageURL} 
+                            onChange={(e) => setImageURL(e.target.value)} 
+                            placeholder="Enter image URL" 
+                        />
+                    </Form.Group>
+
                     <Button 
                         variant="primary" 
                         type="submit" 
@@ -113,7 +125,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                 </Form>
             </Modal.Body>
         </Modal>
-    )
+    );
 }
 
 export default ProductEditorModal;

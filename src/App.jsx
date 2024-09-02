@@ -65,7 +65,7 @@ function App() {
   const handleCloseAuthModal = () => setShowAuthModal(false);
 
   return (
-    <>
+    <div className="d-flex flex-column min-vh-100">
       <Navbar bg="dark" variant="dark" expand="lg" className="ps-3">
         <Navbar.Brand href="#home">Gallery e-shop</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
@@ -87,33 +87,46 @@ function App() {
         </Navbar.Collapse>
       </Navbar>
 
-      {!authenticated && (
-        <Button variant="primary" className="m-3" onClick={handleShowAuthModal}>
-          Admin Login
-        </Button>
-      )}
+      <div className="flex-grow-1 position-relative">
+        {/* Conditional rendering of buttons */}
+        {!authenticated && (
+          <Button
+            variant="secondary"
+            className="position-absolute bottom-0 end-0 m-3"
+            style={{ zIndex: 1 }}
+            onClick={handleShowAuthModal}
+          >
+            Admin Login
+          </Button>
+        )}
 
-      {authenticated && (
-        <Button variant="success" className="m-3" onClick={() => handleEditProduct(null)}>
-          Add new item
-        </Button>
-      )}
+        {authenticated && (
+          <Button
+            variant="success"
+            className="position-absolute bottom-0 end-0 m-3"
+            style={{ zIndex: 1 }}
+            onClick={() => handleEditProduct(null)}
+          >
+            Add new item
+          </Button>
+        )}
 
-      <Container className="my-4">
-        <Row>
-          {Object.keys(products).map((key) => (
-            <Col key={key} xs={12} sm={6} md={4} lg={3} className="mb-4">
-              <ProductCard
-                productKey={key}
-                product={products[key]}
-                handleEditProduct={() => handleEditProduct(key)}
-                handleRemoveProduct={() => handleRemoveProduct(key, products[key].name)}
-                authenticated={authenticated} // Pass authenticated state
-              />
-            </Col>
-          ))}
-        </Row>
-      </Container>
+        <Container className="my-4">
+          <Row>
+            {Object.keys(products).map((key) => (
+              <Col key={key} xs={12} sm={6} md={4} lg={3} className="mb-4">
+                <ProductCard
+                  productKey={key}
+                  product={products[key]}
+                  handleEditProduct={() => handleEditProduct(key)}
+                  handleRemoveProduct={() => handleRemoveProduct(key, products[key].name)}
+                  authenticated={authenticated}
+                />
+              </Col>
+            ))}
+          </Row>
+        </Container>
+      </div>
 
       <ProductEditorModal
         editorOpen={editorOpen}
@@ -135,7 +148,7 @@ function App() {
         itemName={productToDelete ? productToDelete.productName : ''}
       />
 
-      <div className="bottom-banner position-fixed bottom-0 start-0 end-0 bg-success text-light text-center py-3">
+      <footer className="bg-success text-light text-center py-3 mt-auto">
         <Container className="my-4">
           <Row className="justify-content-center">
             <Col>
@@ -147,8 +160,8 @@ function App() {
             </Col>
           </Row>
         </Container>
-      </div>
-    </>
+      </footer>
+    </div>
   );
 }
 
