@@ -15,7 +15,7 @@ function App() {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showConfirmDelete, setShowConfirmDelete] = useState(false);
   const [productToDelete, setProductToDelete] = useState(null);
-  const [sortOption, setSortOption] = useState('price-asc');
+  const [sortOption, setSortOption] = useState('default');
   const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
