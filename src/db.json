@@ -15,7 +15,6 @@
         {
             "imageURL": "https://example.com/image.jpg",
             "title": "The Persistence of Memory",
-            "artist": "Salvador Dalí",
             "description": "Surreal artwork featuring melting clocks in a dreamlike landscape.",
             "price": 7000.00
         },

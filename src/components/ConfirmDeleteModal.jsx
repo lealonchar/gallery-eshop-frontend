@@ -7,7 +7,7 @@ const ConfirmDeleteModal = ({ show, handleClose, handleConfirm, itemName }) => {
         <Modal.Title>Confirm Deletion</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p>Are you sure you want to delete this item<strong>{itemName}</strong>?</p>
+        <p>Are you sure you want to delete the item <strong>{itemName}</strong>?</p>
       </Modal.Body>
       <Modal.Footer>
       <Button variant="danger" onClick={handleConfirm}>
