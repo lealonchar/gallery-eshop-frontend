@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Button, Card, Modal, Row, Col } from 'react-bootstrap';
-import { useCart } from './CartContext'; // Import Cart Context
+import { useCart } from './CartContext'; 
 
 const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProduct, authenticated }) => {
   const [showImageModal, setShowImageModal] = useState(false);
-  const { addToCart } = useCart(); // Use Cart Context
+  const { addToCart } = useCart();
 
   const handleShowImageModal = () => setShowImageModal(true);
   const handleCloseImageModal = () => setShowImageModal(false);
@@ -23,13 +23,11 @@ const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProdu
             src={product.imageURL}
             alt={product.title}
             style={{ cursor: 'pointer' }}
-            onClick={handleShowImageModal} // Add click handler
+            onClick={handleShowImageModal} 
           />
         )}
         <Card.Body>
           <Card.Title>{product.title}</Card.Title>
-          {/* Removed the artist section */}
-          {/* <Card.Subtitle className="mb-2 text-muted">{product.artist}</Card.Subtitle> */}
           <Card.Text>{product.description}</Card.Text>
           <Card.Text>
             <strong>${product.price.toFixed(2)}</strong>
@@ -40,14 +38,12 @@ const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProdu
               <Button variant="danger" className="ms-2" onClick={() => handleRemoveProduct(productKey)}>Remove</Button>
             </>
           )}
-          {/* Conditionally render the Buy button based on authentication */}
           {!authenticated && (
             <Button variant="success" className="mt-2" onClick={handleBuy}>Buy</Button>
           )}
         </Card.Body>
       </Card>
 
-      {/* Full-screen image modal */}
       <Modal
         show={showImageModal}
         onHide={handleCloseImageModal}
@@ -69,7 +65,6 @@ const ProductCard = ({ productKey, product, handleEditProduct, handleRemoveProdu
               <h3>{product.title}</h3>
               <p>{product.description}</p>
               <h4>Price: ${product.price.toFixed(2)}</h4>
-              {/* Conditionally render the Buy button based on authentication */}
               {!authenticated && (
                 <Button variant="success" onClick={handleBuy}>Buy</Button>
               )}

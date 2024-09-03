@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { Button, Form, Modal } from 'react-bootstrap';
 
-const AUTH_PASSWORD = 'pasvord'; // Replace with your fixed password
+const AUTH_PASSWORD = 'pasvord'; 
 
 const AuthModal = ({ show, handleClose, setAuthenticated }) => {
   const [password, setPassword] = useState('');

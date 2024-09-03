@@ -7,14 +7,14 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [imageURL, setImageURL] = useState(""); // New state for image URL
+    const [imageURL, setImageURL] = useState(""); 
 
     useEffect(() => {
         const resetData = () => {
             setTitle(product?.title || "");
             setDescription(product?.description || "");
             setPrice(product?.price || 0);
-            setImageURL(product?.imageURL || ""); // Reset image URL
+            setImageURL(product?.imageURL || ""); 
         }
 
         resetData();
@@ -37,8 +37,8 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         const productData = {
             title,
             description,
-            price: parseFloat(price), // Ensure price is a number
-            imageURL: imageURL.trim() // Include image URL
+            price: parseFloat(price), 
+            imageURL: imageURL.trim() 
         };
 
         let productRef;
@@ -81,12 +81,6 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                         <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </Form.Group>
 
-                    {/* Removed the artist field */}
-                    {/* <Form.Group className="mb-3" controlId="formBasicArtist">
-                        <Form.Label>Artist</Form.Label>
-                        <Form.Control type="text" value={artist} onChange={(e) => setArtist(e.target.value)} />
-                    </Form.Group> */}
-
                     <Form.Group className="mb-3" controlId="formBasicDescription">
                         <Form.Label>Description</Form.Label>
                         <Form.Control as="textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
@@ -116,7 +110,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                         variant="primary" 
                         type="submit" 
                         onClick={handleSubmit}
-                        disabled={!isFormValid} // Disable if form is invalid
+                        disabled={!isFormValid}
                     >
                         Submit
                     </Button>

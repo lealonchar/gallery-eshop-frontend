@@ -43,7 +43,7 @@ const Cart = ({ show, handleClose }) => {
         <Button variant="secondary" onClick={handleClose}>
           Close
         </Button>
-        {/* Optionally, add a checkout button or other actions */}
+      
       </Modal.Footer>
     </Modal>
   );

@@ -2,10 +2,10 @@ import React from 'react';
 import { Modal, Button, ListGroup } from 'react-bootstrap';
 
 const Cart = ({ show, handleClose, cartItems, removeFromCart }) => {
-  // Calculate total price
+
   const totalPrice = cartItems.reduce((total, item) => total + (item.price || 0), 0);
 
-  // Generate the mailto link
+
   const generateMailtoLink = () => {
     const itemNames = cartItems.map(item => item.title).join(', ');
     const subject = encodeURIComponent('Order Inquiry');

@@ -90,7 +90,7 @@ function App() {
   };
 
   const handleOpenEditor = () => {
-    setIndexOfEditProduct(null); // No product selected means a new product will be added
+    setIndexOfEditProduct(null);
     setEditorOpen(true);
   };
 
