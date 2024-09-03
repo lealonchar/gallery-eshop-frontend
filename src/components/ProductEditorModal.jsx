@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { Button, Form, Modal } from 'react-bootstrap';
+import { Button, Form, Modal, Alert } from 'react-bootstrap';
+import { useDropzone } from 'react-dropzone'; // Make sure you have this installed
 import { database } from '../config/firebaseConfig';
 import { ref, push, update } from 'firebase/database';
 
@@ -7,38 +8,58 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
-    const [imageURL, setImageURL] = useState(""); 
+    const [imageURL, setImageURL] = useState("");
+    const [file, setFile] = useState(null);
+    const [error, setError] = useState("");
 
     useEffect(() => {
         const resetData = () => {
             setTitle(product?.title || "");
             setDescription(product?.description || "");
             setPrice(product?.price || 0);
-            setImageURL(product?.imageURL || ""); 
-        }
+            setImageURL(product?.imageURL || "");
+            setFile(null); // Reset file when product changes
+        };
 
         resetData();
     }, [product]);
 
+    const handleDrop = (acceptedFiles) => {
+        if (acceptedFiles && acceptedFiles.length > 0) {
+            const newFile = acceptedFiles[0];
+            setFile(newFile);
+
+            // Create a URL for the image to display it in the modal
+            const fileURL = URL.createObjectURL(newFile);
+            setImageURL(fileURL);
+        }
+    };
+
+    const { getRootProps, getInputProps } = useDropzone({
+        onDrop: handleDrop,
+        accept: 'image/*',
+    });
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+        setError("");
 
         // Validate inputs
         if (!title.trim() || !description.trim()) {
-            alert('Please fill in all required fields.');
+            setError('Please fill in all required fields.');
             return;
         }
 
         if (price <= 0) {
-            alert('Price must be greater than 0.');
+            setError('Price must be greater than 0.');
             return;
         }
 
         const productData = {
             title,
             description,
-            price: parseFloat(price), 
-            imageURL: imageURL.trim() 
+            price: parseFloat(price),
+            imageURL: imageURL.trim() // Use imageURL state for the URL
         };
 
         let productRef;
@@ -57,9 +78,9 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             handleCloseModal();
         } catch (error) {
             console.error('Error saving product:', error);
-            alert('Error saving product: ' + error.message);
+            setError('Error saving product: ' + error.message);
         }
-    }
+    };
 
     const isFormValid = title.trim() && description.trim() && price > 0;
 
@@ -70,20 +91,44 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             dialogClassName="modal-90w"
         >
             <Modal.Header closeButton>
-                <Modal.Title id="example-custom-modal-styling-title">
+                <Modal.Title>
                     {product ? 'Edit Product' : 'Create Product'}
                 </Modal.Title>
             </Modal.Header>
             <Modal.Body>
-                <Form>
+                {error && <Alert variant="danger">{error}</Alert>}
+                <Form onSubmit={handleSubmit}>
+                    <Form.Group className="mb-3">
+                        <Form.Label>Drag & Drop an Image</Form.Label>
+                        <div 
+                            {...getRootProps()} 
+                            className="border border-secondary border-dashed p-3 rounded d-flex justify-content-center align-items-center mb-3"
+                        >
+                            <input {...getInputProps()} />
+                            {file ? (
+                                <img src={URL.createObjectURL(file)} alt="Preview" className="img-fluid" />
+                            ) : (
+                                <p className="text-muted">Drag & drop an image here, or click to select one</p>
+                            )}
+                        </div>
+                    </Form.Group>
+
                     <Form.Group className="mb-3" controlId="formBasicTitle">
                         <Form.Label>Title</Form.Label>
-                        <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
+                        <Form.Control 
+                            type="text" 
+                            value={title} 
+                            onChange={(e) => setTitle(e.target.value)} 
+                        />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicDescription">
                         <Form.Label>Description</Form.Label>
-                        <Form.Control as="textarea" value={description} onChange={(e) => setDescription(e.target.value)} />
+                        <Form.Control 
+                            as="textarea" 
+                            value={description} 
+                            onChange={(e) => setDescription(e.target.value)} 
+                        />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPrice">
@@ -96,20 +141,9 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                         />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicImageURL">
-                        <Form.Label>Image URL</Form.Label>
-                        <Form.Control 
-                            type="url" 
-                            value={imageURL} 
-                            onChange={(e) => setImageURL(e.target.value)} 
-                            placeholder="Enter image URL" 
-                        />
-                    </Form.Group>
-
                     <Button 
                         variant="primary" 
                         type="submit" 
-                        onClick={handleSubmit}
                         disabled={!isFormValid}
                     >
                         Submit
@@ -118,6 +152,6 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             </Modal.Body>
         </Modal>
     );
-}
+};
 
 export default ProductEditorModal;
