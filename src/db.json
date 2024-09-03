@@ -3,14 +3,12 @@
         {
             "imageURL": "https://example.com/image.jpg",
             "title": "Starry Night",
-            "artist": "Vincent van Gogh",
             "description": "A masterpiece depicting a swirling night sky over a quiet village.",
             "price": 5000.00
         },
         {
             "imageURL": "https://example.com/image.jpg",
             "title": "Mona Lisa",
-            "artist": "Leonardo da Vinci",
             "description": "Famous portrait of a woman with an enigmatic expression.",
             "price": 8000.00
         },
@@ -24,7 +22,6 @@
         {
             "imageURL": "https://example.com/image.jpg",
             "title": "The Scream",
-            "artist": "Edvard Munch",
             "description": "Iconic painting expressing existential angst and despair.",
             "price": 6000.00
         }

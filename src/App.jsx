@@ -1,11 +1,14 @@
-import { useEffect, useState } from "react";
-import { app } from "./config/firebaseConfig";
-import { getDatabase, onValue, ref, remove } from "firebase/database";
-import ProductEditorModal from "./components/ProductEditorModal";
-import ProductCard from "./components/ProductCard";
-import AuthModal from "./components/AuthModal";
-import ConfirmDeleteModal from "./components/ConfirmDeleteModal";
-import { Button, Navbar, Form, FormControl, Container, Row, Col } from "react-bootstrap";
+// src/App.jsx
+import React, { useEffect, useState } from 'react';
+import { app } from './config/firebaseConfig';
+import { getDatabase, onValue, ref, remove } from 'firebase/database';
+import ProductEditorModal from './components/ProductEditorModal';
+import ProductCard from './components/ProductCard';
+import AuthModal from './components/AuthModal';
+import ConfirmDeleteModal from './components/ConfirmDeleteModal';
+import Cart from './components/Cart'; // Import Cart component
+import { CartProvider, useCart } from './components/CartContext'; // Import CartContext
+import { Button, Navbar, Form, FormControl, Container, Row, Col } from 'react-bootstrap';
 
 function App() {
   const [products, setProducts] = useState([]);
@@ -17,6 +20,10 @@ function App() {
   const [productToDelete, setProductToDelete] = useState(null);
   const [sortOption, setSortOption] = useState('default');
   const [searchQuery, setSearchQuery] = useState('');
+  const [cartVisible, setCartVisible] = useState(false);
+
+  // Use CartContext here
+  const { cartItems, addToCart, removeFromCart } = useCart();
 
   useEffect(() => {
     const database = getDatabase(app);
@@ -35,9 +42,6 @@ function App() {
   }, []);
 
   const sortProducts = (products, option) => {
-    console.log('Sorting option:', option);
-    console.log('Products before sorting:', products);
-
     const productKeys = Object.keys(products);
     if (option === 'default') {
       return productKeys.reduce((sorted, key) => {
@@ -116,26 +120,35 @@ function App() {
 
   const handleShowAuthModal = () => setShowAuthModal(true);
   const handleCloseAuthModal = () => setShowAuthModal(false);
+  const handleCartToggle = () => setCartVisible(!cartVisible);
 
   return (
     <div className="d-flex flex-column min-vh-100">
       <Navbar bg="dark" variant="dark" expand="lg" className="ps-3">
-        <Navbar.Brand href="#home">Gallery e-shop</Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav">
-          <Form className="d-flex ms-auto me-4">
-            <FormControl
-              type="search"
-              placeholder="Search item"
-              className="me-2"
-              aria-label="Search"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-            />
-            <Button variant="outline-success">Search</Button>
-          </Form>
-        </Navbar.Collapse>
-      </Navbar>
+  <Navbar.Brand href="#home">Gallery e-shop</Navbar.Brand>
+  <Navbar.Toggle aria-controls="basic-navbar-nav" />
+  <Navbar.Collapse id="basic-navbar-nav">
+    <Form className="d-flex ms-auto me-4">
+      <FormControl
+        type="search"
+        placeholder="Search item"
+        className="me-2"
+        aria-label="Search"
+        value={searchQuery}
+        onChange={(e) => setSearchQuery(e.target.value)}
+      />
+      <Button variant="outline-success">Search</Button>
+      <Button variant="outline-info" className="ms-2 d-flex align-items-center">
+        Cart
+        <span className="badge text-dark bg-info ms-2">
+          {cartItems.length}
+        </span>
+      </Button>
+    </Form>
+  </Navbar.Collapse>
+</Navbar>
+
+
 
       <div className="flex-grow-1 position-relative">
         {!authenticated && (
@@ -190,12 +203,20 @@ function App() {
                   handleEditProduct={() => handleEditProduct(key)}
                   handleRemoveProduct={() => handleRemoveProduct(key, filteredProducts[key].title)}
                   authenticated={authenticated}
+                  addToCart={addToCart}
                 />
               </Col>
             ))}
           </Row>
         </Container>
       </div>
+
+      <Cart
+        show={cartVisible}
+        handleClose={handleCartToggle}
+        cartItems={cartItems}
+        removeFromCart={removeFromCart}
+      />
 
       <ProductEditorModal
         editorOpen={editorOpen}

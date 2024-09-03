@@ -6,7 +6,6 @@ import { ref, push, update } from 'firebase/database';
 const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal }) => {
     const [title, setTitle] = useState("");
     const [description, setDescription] = useState("");
-    const [artist, setArtist] = useState("");
     const [price, setPrice] = useState("");
     const [imageURL, setImageURL] = useState(""); // New state for image URL
 
@@ -14,7 +13,6 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         const resetData = () => {
             setTitle(product?.title || "");
             setDescription(product?.description || "");
-            setArtist(product?.artist || "");
             setPrice(product?.price || 0);
             setImageURL(product?.imageURL || ""); // Reset image URL
         }
@@ -26,7 +24,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         e.preventDefault();
 
         // Validate inputs
-        if (!title.trim() || !artist.trim() || !description.trim()) {
+        if (!title.trim() || !description.trim()) {
             alert('Please fill in all required fields.');
             return;
         }
@@ -39,7 +37,6 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         const productData = {
             title,
             description,
-            artist,
             price: parseFloat(price), // Ensure price is a number
             imageURL: imageURL.trim() // Include image URL
         };
@@ -64,7 +61,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         }
     }
 
-    const isFormValid = title.trim() && artist.trim() && description.trim() && price > 0;
+    const isFormValid = title.trim() && description.trim() && price > 0;
 
     return (
         <Modal
@@ -84,10 +81,11 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                         <Form.Control type="text" value={title} onChange={(e) => setTitle(e.target.value)} />
                     </Form.Group>
 
-                    <Form.Group className="mb-3" controlId="formBasicArtist">
+                    {/* Removed the artist field */}
+                    {/* <Form.Group className="mb-3" controlId="formBasicArtist">
                         <Form.Label>Artist</Form.Label>
                         <Form.Control type="text" value={artist} onChange={(e) => setArtist(e.target.value)} />
-                    </Form.Group>
+                    </Form.Group> */}
 
                     <Form.Group className="mb-3" controlId="formBasicDescription">
                         <Form.Label>Description</Form.Label>
