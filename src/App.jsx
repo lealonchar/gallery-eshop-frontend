@@ -243,7 +243,7 @@ function App() {
               <Col>
                 <h3>xFrostinax</h3>
                 <p>For additional information send me an email</p>
-                <a href="mailto:lea.lonchar@gmail.com?subject=Question&body=Hello, I would like some additional information." className="btn btn-light">
+                <a href="mailto:frostpsycho100@gmail.com?subject=Question&body=Hello, I would like some additional information." className="btn btn-light">
                   Email
                 </a>
               </Col>
