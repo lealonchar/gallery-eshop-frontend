@@ -16,7 +16,7 @@ const Contact = () => {
         </Col>
         <Col md={6} className="d-flex align-items-center">
           <div className="text-center text-md-start mx-md-5">
-            <h1>Contact Us</h1>
+            <h1>Contact</h1>
             <p>Phone: +38975 178 241</p>
             <p>Mail: <a href="mailto:frostpsycho100@gmail.com">frostpsycho100@gmail.com</a></p>
           </div>
