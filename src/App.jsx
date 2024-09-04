@@ -127,7 +127,7 @@ function App() {
     <Router>
       <div className="d-flex flex-column min-vh-100">
         <Navbar bg="dark" variant="dark" expand="lg" className="ps-3">
-          <Navbar.Brand as={Link} to="/">Gallery e-shop</Navbar.Brand>
+          <Navbar.Brand as={Link} to="/">xFrostinax</Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
             <Nav className="me-auto">
@@ -241,8 +241,8 @@ function App() {
           <Container className="my-4">
             <Row className="justify-content-center">
               <Col>
-                <h3>Gallery e-shop</h3>
-                <p>For additional information send us an email</p>
+                <h3>xFrostinax</h3>
+                <p>For additional information send me an email</p>
                 <a href="mailto:lea.lonchar@gmail.com?subject=Question&body=Hello, I would like some additional information." className="btn btn-light">
                   Email
                 </a>

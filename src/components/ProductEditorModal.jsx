@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Button, Form, Modal, Alert } from 'react-bootstrap';
-import { useDropzone } from 'react-dropzone'; // Make sure you have this installed
+import { useDropzone } from 'react-dropzone';
 import { database } from '../config/firebaseConfig';
 import { ref, push, update } from 'firebase/database';
 
@@ -10,6 +10,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
     const [price, setPrice] = useState("");
     const [imageURL, setImageURL] = useState("");
     const [file, setFile] = useState(null);
+    const [imageURLInput, setImageURLInput] = useState("");
     const [error, setError] = useState("");
 
     useEffect(() => {
@@ -18,7 +19,8 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             setDescription(product?.description || "");
             setPrice(product?.price || 0);
             setImageURL(product?.imageURL || "");
-            setFile(null); // Reset file when product changes
+            setFile(null);
+            setImageURLInput(product?.imageURL || "");
         };
 
         resetData();
@@ -29,9 +31,9 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             const newFile = acceptedFiles[0];
             setFile(newFile);
 
-            // Create a URL for the image to display it in the modal
             const fileURL = URL.createObjectURL(newFile);
             setImageURL(fileURL);
+            setImageURLInput(""); // Clear URL input if file is dropped
         }
     };
 
@@ -44,7 +46,6 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
         e.preventDefault();
         setError("");
 
-        // Validate inputs
         if (!title.trim() || !description.trim()) {
             setError('Please fill in all required fields.');
             return;
@@ -59,7 +60,7 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
             title,
             description,
             price: parseFloat(price),
-            imageURL: imageURL.trim() // Use imageURL state for the URL
+            imageURL: imageURL.trim() || imageURLInput.trim()
         };
 
         let productRef;
@@ -99,9 +100,9 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                 {error && <Alert variant="danger">{error}</Alert>}
                 <Form onSubmit={handleSubmit}>
                     <Form.Group className="mb-3">
-                        <Form.Label>Drag & Drop an Image</Form.Label>
-                        <div 
-                            {...getRootProps()} 
+                        <Form.Label>Image</Form.Label>
+                        <div
+                            {...getRootProps()}
                             className="border border-secondary border-dashed p-3 rounded d-flex justify-content-center align-items-center mb-3"
                         >
                             <input {...getInputProps()} />
@@ -111,39 +112,45 @@ const ProductEditorModal = ({ editorOpen, product, productKey, handleCloseModal 
                                 <p className="text-muted">Drag & drop an image here, or click to select one</p>
                             )}
                         </div>
+                        <Form.Control
+                            type="text"
+                            placeholder="Or enter image URL here"
+                            value={imageURLInput}
+                            onChange={(e) => setImageURLInput(e.target.value)}
+                        />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicTitle">
                         <Form.Label>Title</Form.Label>
-                        <Form.Control 
-                            type="text" 
-                            value={title} 
-                            onChange={(e) => setTitle(e.target.value)} 
+                        <Form.Control
+                            type="text"
+                            value={title}
+                            onChange={(e) => setTitle(e.target.value)}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicDescription">
                         <Form.Label>Description</Form.Label>
-                        <Form.Control 
-                            as="textarea" 
-                            value={description} 
-                            onChange={(e) => setDescription(e.target.value)} 
+                        <Form.Control
+                            as="textarea"
+                            value={description}
+                            onChange={(e) => setDescription(e.target.value)}
                         />
                     </Form.Group>
 
                     <Form.Group className="mb-3" controlId="formBasicPrice">
                         <Form.Label>Price</Form.Label>
-                        <Form.Control 
-                            type="number" 
-                            value={price} 
-                            onChange={(e) => setPrice(e.target.value)} 
-                            min="0" 
+                        <Form.Control
+                            type="number"
+                            value={price}
+                            onChange={(e) => setPrice(e.target.value)}
+                            min="0"
                         />
                     </Form.Group>
 
-                    <Button 
-                        variant="primary" 
-                        type="submit" 
+                    <Button
+                        variant="primary"
+                        type="submit"
                         disabled={!isFormValid}
                     >
                         Submit
