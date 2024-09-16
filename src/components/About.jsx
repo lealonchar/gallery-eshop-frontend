@@ -8,7 +8,7 @@ const About = () => {
         <Col md={6} className="d-flex justify-content-center align-items-center mb-4 mb-md-0">
           <div className="text-center text-md-start" style={{ maxWidth: '90%' }}>
             <h1>About the Artist</h1>
-            <p>All of the art is drawn by Frostina</p>
+            <p>All of the art is drawn by frostina</p>
             <p>
               Instagram: <a href="https://www.instagram.com/xfrostinax?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==">@xfrostinax</a>
             </p>
